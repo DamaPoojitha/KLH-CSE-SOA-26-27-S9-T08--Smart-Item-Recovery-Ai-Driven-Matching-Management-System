@@ -15,3 +15,21 @@ The core innovation of the system is its **AI Matching Service**, which automate
 
 
 <img width="704" height="468" alt="image" src="https://github.com/user-attachments/assets/0c89ffa1-63af-4af1-9003-d641faac76de" />
+
+
+Tech Stack- 
+
+Java 21 – Backend development
+Spring Boot – Building microservices
+Spring Cloud – Microservices communication and management
+Netflix Eureka – Service discovery
+API Gateway – Routing client requests to services
+Maven – Dependency and project management
+MySQL – Database management
+JPA / Hibernate – Database interaction and ORM
+REST APIs – Communication between frontend and backend
+Postman – API testing
+React.js – Frontend development
+HTML, CSS & JavaScript – UI development
+Git & GitHub – Version control
+VS Code / Eclipse / Spring Tool Suite – Development environments
