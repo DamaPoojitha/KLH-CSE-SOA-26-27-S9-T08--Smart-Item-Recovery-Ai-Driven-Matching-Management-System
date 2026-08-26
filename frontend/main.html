@@ -1,0 +1,71 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'/><meta name='viewport' content='width=device-width,initial-scale=1'/><title>KLH Portal</title><link rel='stylesheet' href='css/style.css'/></head><body><video id='bg-video' autoplay muted loop><source src='videos/main-bg.mp4' type='video/mp4'/></video><div class='overlay'></div><header class='topbar glass'><div class='left'><img src='assets/klh-logo.png' class='logo-small sharp'/><h1>KLH Lost & Found</h1></div><div class='top-actions'><button id='adminBtn' class='btn'>📊 Admin</button><button id='uploadBtn' class='btn primary'>+ Report Item</button><button id='logoutBtn' class='btn'>🚪 Logout</button></div></header><section class='controls glass'><input id='search' type='text' placeholder='Search items or descriptions...'/><select id='floorFilter'><option value="">All Floors</option><option value='-1'>Floor -1</option><option value='0'>Floor 0</option><option value='1'>Floor 1</option><option value='2'>Floor 2</option><option value='3'>Floor 3</option><option value='4'>Floor 4</option></select><select id='typeFilter'><option value=''>All Types</option><option value='Lost'>Lost</option><option value='Found'>Found</option></select><button id='imageSearchBtn' class='btn'>🖼 Search by Image</button><input id='imageSearchInput' type='file' accept='image/*' hidden/>
+<!-- Camera Integration -->
+<div class="camera-container">
+  <button id="openCamera" class="camera-btn">📷 Use Camera</button>
+  <video id="cameraStream" autoplay style="display:none; width:200px; margin-top:10px; border-radius:8px;"></video>
+  <button id="captureBtn" class="camera-btn" style="display:none;">Capture</button>
+  <canvas id="cameraCanvas" style="display:none;"></canvas>
+</div>
+
+<script>
+const openCameraBtn = document.getElementById('openCamera');
+const captureBtn = document.getElementById('captureBtn');
+const video = document.getElementById('cameraStream');
+const canvas = document.getElementById('cameraCanvas');
+const fileInput = document.querySelector('input[type="file"]');
+
+let stream;
+
+openCameraBtn.addEventListener('click', async () => {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    video.style.display = 'block';
+    captureBtn.style.display = 'inline-block';
+  } catch (err) {
+    alert('Camera access denied or unavailable.');
+  }
+});
+
+captureBtn.addEventListener('click', () => {
+  const context = canvas.getContext('2d');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob((blob) => {
+    const file = new File([blob], 'captured_image.png', { type: 'image/png' });
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    fileInput.files = dataTransfer.files;
+  });
+  stream.getTracks().forEach(track => track.stop());
+  video.style.display = 'none';
+  captureBtn.style.display = 'none';
+  alert('Image captured and added to upload!');
+});
+</script>
+
+<!-- Camera Option -->
+<label for="cameraInput" class="camera-btn">
+  📷 Camera
+  <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display:none;">
+</label>
+<img id="cameraPreview" style="display:none; margin-top:10px; max-width:200px; border-radius:8px;"/>
+<script>
+const cameraInput = document.getElementById('cameraInput');
+const preview = document.getElementById('cameraPreview');
+if (cameraInput) {
+    cameraInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                preview.src = event.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+</script>
+</section><main class='content'><section id='itemGrid' class='cards'></section><section id='timelineContainer' class='hidden'><div id='timeline'></div></section></main><div id='uploadModal' class='modal hidden'><div class='modal-card glass'><h3>Report Lost/Found Item</h3><form id='uploadForm'><input id='title' type='text' placeholder='Item title (e.g. Black Wallet)' required/><textarea id='description' placeholder='Short description' required></textarea><input id='location' type='text' placeholder='Location (e.g. Library table 3)' required/><select id='floor' required><option value=''>Select floor</option><option value='-1'>-1</option><option value='0'>0</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option></select><select id='itemType' required><option value='Lost'>Lost</option><option value='Found'>Found</option></select><input id='image' type='file' accept='image/*' required/><div class='row'><button type='submit' class='btn primary'>Post</button><button type='button' id='cancelUpload' class='btn'>Cancel</button></div></form></div></div><button id='chatToggle' class='chat-button'>Chat</button><div id='itemChatModal' class='chat-modal hidden'><div class='chat-window glass'><div class='chat-header'><h3 id='chatItemTitle'>Campus HelpDesk</h3><button id='closeItemChat' class='close-btn'>×</button></div><div class='chat-messages' id='chatMessages'></div><div class='chat-input-bar'><input id='chatMessageInput' placeholder='Type message...'/><button id='sendChatMsg' class='btn primary'>Send</button></div></div></div><div id='loader' class='loader hidden'>Analyzing image…</div><script src='js/theme.js'></script><script src='js/main.js'></script></body></html>
